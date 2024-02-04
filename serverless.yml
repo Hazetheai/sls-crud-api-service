@@ -1,0 +1,84 @@
+# org: stefario
+# app: stefar-forms
+service: crud-service
+
+frameworkVersion: '3'
+
+plugins:
+  - serverless-bundle
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  # lambdaHashingVersion: '20201221'
+  memorySize: 256
+  region: eu-west-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    SLS_DEBUG: '*'
+    DYNAMODB_TABLE: ${self:service}-${sls:stage}
+  httpApi:
+    cors: true
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: 'arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}'
+
+functions:
+  create:
+    handler: messages/create.handler
+    events:
+      - httpApi:
+          path: /messages
+          method: post
+
+  list:
+    handler: messages/list.handler
+    events:
+      - httpApi:
+          path: /messages
+          method: get
+
+  get:
+    handler: messages/get.handler
+    events:
+      - httpApi:
+          path: /messages/{id}
+          method: get
+
+  update:
+    handler: messages/update.handler
+    events:
+      - httpApi:
+          path: /messages/{id}
+          method: put
+
+  delete:
+    handler: messages/delete.handler
+    events:
+      - httpApi:
+          path: /messages/{id}
+          method: delete
+
+resources:
+  Resources:
+    MessagesDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}

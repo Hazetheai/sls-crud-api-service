@@ -1,0 +1,20 @@
+{
+  "name": "form-service",
+  "version": "1.0.0",
+  "description": "Serverless CRUD service exposing a REST HTTP interface",
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "uuid": "^2.0.3",
+    "aws-sdk": "^2.639.0"
+  },
+  "devDependencies": {
+    "@middy/core": "^2.5.7",
+    "@middy/http-cors": "^2.5.7",
+    "@middy/http-error-handler": "^2.5.7",
+    "@middy/http-event-normalizer": "^2.5.7",
+    "@middy/http-json-body-parser": "^2.5.7",
+    "http-errors": "^2.0.0",
+    "serverless-bundle": "^4.4.0"
+  }
+}
